@@ -37,7 +37,7 @@ class UnstructuredURLLoader(BaseLoader):
 
     def __is_headers_available(self) -> bool:
         _unstructured_version = self.__version.split("-")[0]
-        unstructured_version = tuple([int(x) for x in _unstructured_version.split(".")])
+        unstructured_version = tuple(int(x) for x in _unstructured_version.split("."))
 
         return unstructured_version >= (0, 5, 7)
 
@@ -45,7 +45,7 @@ class UnstructuredURLLoader(BaseLoader):
         """Load file."""
         from unstructured.partition.html import partition_html
 
-        docs: List[Document] = list()
+        docs: List[Document] = []
         for url in self.urls:
             try:
                 if self.__is_headers_available():

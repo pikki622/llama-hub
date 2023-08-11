@@ -42,19 +42,14 @@ class MangoppsGuidesReader(BaseReader):
 
                 page_title = soup.find("title").text
 
-                # Remove the div with aria-label="Table of contents"
-                table_of_contents_div = soup.find(
+                if table_of_contents_div := soup.find(
                     "div", {"aria-label": "Table of contents"}
-                )
-                if table_of_contents_div:
+                ):
                     table_of_contents_div.decompose()
 
-                # Remove header and footer
-                header = soup.find("header")
-                if header:
+                if header := soup.find("header"):
                     header.decompose()
-                footer = soup.find("footer")
-                if footer:
+                if footer := soup.find("footer"):
                     footer.decompose()
 
                 # Exclude links and their text content from the main content
@@ -66,13 +61,7 @@ class MangoppsGuidesReader(BaseReader):
                     if element.get_text(strip=True) == "":
                         element.decompose()
 
-                # Find the main element containing the desired content
-                main_element = soup.find(
-                    "main"
-                )  # Replace "main" with the appropriate element tag or CSS class
-
-                # Extract the text content from the main element
-                if main_element:
+                if main_element := soup.find("main"):
                     text_content = main_element.get_text("\n")
                     # Remove multiple consecutive newlines and keep only one newline
                     text_content = re.sub(r"\n+", "\n", text_content)
@@ -81,9 +70,7 @@ class MangoppsGuidesReader(BaseReader):
 
                 page_text = text_content
 
-                guides_page = {}
-                guides_page["title"] = page_title
-                guides_page["text"] = page_text
+                guides_page = {"title": page_title, "text": page_text}
                 guides_pages[url] = guides_page
             except Exception as e:
                 print(f"Failed for {url} => {e}")
@@ -122,11 +109,11 @@ class MangoppsGuidesReader(BaseReader):
 
         newurls = []
         for link in soup.find_all("a"):
-            href: str = link.get("href")
-            if href and urlparse(href).netloc == self.domain_url:
-                newurls.append(href)
-            elif href and href.startswith("/"):
-                newurls.append(f"{self.domain_url}{href}")
+            if href := link.get("href"):
+                if urlparse(href).netloc == self.domain_url:
+                    newurls.append(href)
+                elif href.startswith("/"):
+                    newurls.append(f"{self.domain_url}{href}")
 
         for newurl in newurls:
             if (
@@ -135,7 +122,7 @@ class MangoppsGuidesReader(BaseReader):
                 and f"https://{urlparse(newurl).netloc}" == self.domain_url
                 and len(self.visited) <= self.limit
             ):
-                newurls = newurls + self.fetch_url(newurl)
+                newurls += self.fetch_url(newurl)
 
         newurls = list(set(newurls))
         return newurls

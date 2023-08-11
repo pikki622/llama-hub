@@ -35,15 +35,7 @@ class RemoteReader(BaseReader):
         # Regular expression pattern to match YouTube video URLs
         youtube_pattern = r"(?:https?:\/\/)?(?:www\.)?(?:youtube\.com|youtu\.be)\/(?:watch\?v=)?([^\s&]+)"
 
-        # Match the pattern against the URL
-        match = re.match(youtube_pattern, url)
-
-        # If there's a match, it's a YouTube video URL
-        if match:
-            return True
-
-        # Otherwise, it's not a YouTube video URL
-        return False
+        return bool(match := re.match(youtube_pattern, url))
 
     def load_data(self, url: str) -> List[Document]:
         """Parse whatever is at the URL."""
@@ -57,7 +49,7 @@ class RemoteReader(BaseReader):
         result = urlopen(req)
         url_type = result.info().get_content_type()
         documents = []
-        if url_type == "text/html" or url_type == "text/plain":
+        if url_type in ["text/html", "text/plain"]:
             text = "\n\n".join([str(el.decode("utf-8-sig")) for el in result])
             documents = [Document(text=text, extra_info=extra_info)]
         elif self._is_youtube_video(url):

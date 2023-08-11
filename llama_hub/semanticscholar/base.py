@@ -86,7 +86,7 @@ class SemanticScholarReader(BaseReader):
             text = None
             # concat title and abstract
             if abstract and title:
-                text = title + " " + abstract
+                text = f"{title} {abstract}"
             elif not abstract:
                 text = title
 

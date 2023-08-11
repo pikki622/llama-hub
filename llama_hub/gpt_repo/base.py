@@ -40,16 +40,12 @@ from llama_index.readers.schema.base import Document
 def get_ignore_list(ignore_file_path) -> List[str]:
     ignore_list = []
     with open(ignore_file_path, "r") as ignore_file:
-        for line in ignore_file:
-            ignore_list.append(line.strip())
+        ignore_list.extend(line.strip() for line in ignore_file)
     return ignore_list
 
 
 def should_ignore(file_path, ignore_list) -> bool:
-    for pattern in ignore_list:
-        if fnmatch.fnmatch(file_path, pattern):
-            return True
-    return False
+    return any(fnmatch.fnmatch(file_path, pattern) for pattern in ignore_list)
 
 
 def process_repository(

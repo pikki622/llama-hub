@@ -32,9 +32,13 @@ class PubmedReader(BaseReader):
         import requests
 
         pubmed_search = []
-        parameters = {"tool": "tool", "email": "email", "db": "pmc"}
-        parameters["term"] = search_query
-        parameters["retmax"] = max_results
+        parameters = {
+            "tool": "tool",
+            "email": "email",
+            "db": "pmc",
+            "term": search_query,
+            "retmax": max_results,
+        }
         resp = requests.get(
             "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi",
             params=parameters,
@@ -68,8 +72,6 @@ class PubmedReader(BaseReader):
                     )
                 except Exception:
                     print(f"Unable to parse PMC{_id} or it does not exist")
-                    pass
-
         # Then get documents from Pubmed text, which includes abstracts
         pubmed_documents = []
         for paper in pubmed_search:
@@ -108,9 +110,13 @@ class PubmedReader(BaseReader):
         import requests
 
         pubmed_search = []
-        parameters = {"tool": "tool", "email": "email", "db": "pmc"}
-        parameters["term"] = search_query
-        parameters["retmax"] = max_results
+        parameters = {
+            "tool": "tool",
+            "email": "email",
+            "db": "pmc",
+            "term": search_query,
+            "retmax": max_results,
+        }
         resp = requests.get(
             "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi",
             params=parameters,
@@ -136,7 +142,7 @@ class PubmedReader(BaseReader):
                             journal = element.text
 
                         if element.text:
-                            raw_text += element.text.strip() + " "
+                            raw_text += f"{element.text.strip()} "
 
                     pubmed_search.append(
                         {
@@ -149,20 +155,14 @@ class PubmedReader(BaseReader):
                     time.sleep(1)  # API rate limits
                 except Exception as e:
                     print(f"Unable to parse PMC{_id} or it does not exist:", e)
-                    pass
-
-        # Then get documents from Pubmed text, which includes abstracts
-        pubmed_documents = []
-        for paper in pubmed_search:
-            pubmed_documents.append(
-                Document(
-                    text=paper["text"],
-                    extra_info={
-                        "Title of this paper": paper["title"],
-                        "Journal it was published in:": paper["journal"],
-                        "URL": paper["url"],
-                    },
-                )
+        return [
+            Document(
+                text=paper["text"],
+                extra_info={
+                    "Title of this paper": paper["title"],
+                    "Journal it was published in:": paper["journal"],
+                    "URL": paper["url"],
+                },
             )
-
-        return pubmed_documents
+            for paper in pubmed_search
+        ]

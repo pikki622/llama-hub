@@ -81,7 +81,7 @@ class RssNewsReader(BaseReader):
         for url in urls:
             try:
                 feed = feedparser.parse(url)
-                for i, entry in enumerate(feed.entries):
+                for entry in feed.entries:
                     article = NewsArticleReader(**self.reader_kwargs).load_data(
                         urls=[entry.link],
                     )[0]

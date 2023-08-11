@@ -43,22 +43,19 @@ class CJKPDFReader(BaseReader):
         device = TextConverter(rsrcmgr, retstr, codec=codec, laparams=laparams)
         # Create a PDF interpreter
         interpreter = PDFPageInterpreter(rsrcmgr, device)
-        # Open the PDF file
-        fp = open(pdf_path, "rb")
-        # Create a list to store the text of each page
-        text_list = []
-        # Extract text from each page
-        for page in PDFPage.get_pages(fp):
-            interpreter.process_page(page)
-            # Get the text
-            text = retstr.getvalue()
-            # Add the text to the list
-            text_list.append(text)
-            # Clear the text
-            retstr.truncate(0)
-            retstr.seek(0)
-        # Close the file
-        fp.close()
+        with open(pdf_path, "rb") as fp:
+            # Create a list to store the text of each page
+            text_list = []
+            # Extract text from each page
+            for page in PDFPage.get_pages(fp):
+                interpreter.process_page(page)
+                # Get the text
+                text = retstr.getvalue()
+                # Add the text to the list
+                text_list.append(text)
+                # Clear the text
+                retstr.truncate(0)
+                retstr.seek(0)
         # Close the device
         device.close()
         # Return the text list

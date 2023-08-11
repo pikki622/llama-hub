@@ -65,7 +65,4 @@ class HuggingFaceFSReader(BaseReader):
     def load_data(self, path: str) -> List[Document]:
         """Load data."""
         json_dicts = self.load_dicts(path)
-        docs = []
-        for d in json_dicts:
-            docs.append(Document(text=str(d)))
-        return docs
+        return [Document(text=str(d)) for d in json_dicts]

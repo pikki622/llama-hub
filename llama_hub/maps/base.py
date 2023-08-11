@@ -36,8 +36,7 @@ class OpenMap(BaseReader):
     def _get_user() -> str:
         # choose from all lowercase letter
         letters = string.ascii_lowercase
-        result_str = "".join(random.choice(letters) for i in range(10))
-        return result_str
+        return "".join(random.choice(letters) for _ in range(10))
 
     @staticmethod
     def _get_latlon(locarea: str, user_agent: str) -> tuple:
@@ -83,7 +82,6 @@ class OpenMap(BaseReader):
             raise ImportError("install osmxtract using `pip3 install osmxtract`")
 
         null_list = ["", "null", "none", None]
-        extra_info = {}
         local_area = localarea
 
         if local_area.lower().strip() in null_list:
@@ -102,7 +100,7 @@ class OpenMap(BaseReader):
             bounds, tag=search_tag.lower(), values=tag_values, timeout=500
         )
 
-        extra_info["overpass_query"] = query
+        extra_info = {"overpass_query": query}
         try:
             response = overpass.request(query)
 

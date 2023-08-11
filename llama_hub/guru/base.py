@@ -64,23 +64,23 @@ class GuruReader(BaseReader):
         records = []
         next_page = True
         initial_url = "https://api.getguru.com/api/v1/search/cardmgr?queryType=cards"
-        
+
         response = requests.get(initial_url, auth=self.guru_auth)
         records.extend(response.json())
-        
+
         while next_page:
             try:
                 url = response.headers['Link']
                 url_pattern = r'<(.*?)>'
                 url_match = re.search(url_pattern, url)
-                url = url_match.group(1)
+                url = url_match[1]
             except Exception as e:
                 next_page = False
                 break
-                
+
             response = requests.get(url, auth=self.guru_auth)
             records.extend(response.json())
-        
+
         cards = pd.DataFrame.from_records(records)
         df_normalized = pd.json_normalize(cards['collection'])
         df_normalized.columns = ['collection_' + col for col in df_normalized.columns]
@@ -100,7 +100,7 @@ class GuruReader(BaseReader):
         url = f"https://api.getguru.com/api/v1/cards/{card_id}/extended"
         headers = {"accept": "application/json"}
         response = requests.get(url, auth=self.guru_auth, headers=headers)
-        
+
         if response.status_code == 200:
             title = response.json()['preferredPhrase']
             html = response.json()['content']   #i think this needs to be loaded
@@ -115,8 +115,7 @@ class GuruReader(BaseReader):
                 "guru_link": self._get_guru_link(card_id),
             }   
 
-            doc = Document(text=content, extra_info=metadata)
-            return doc
+            return Document(text=content, extra_info=metadata)
         else:
             logger.warning(f"Could not get card info for {card_id}.")
             return None
@@ -135,8 +134,8 @@ class GuruReader(BaseReader):
                 soup = BeautifulSoup(text, 'html.parser')
                 cleaned_text = soup.get_text()
             return cleaned_text
-        
-        return str(text)
+
+        return text
     
     def _get_guru_link(self, card_id) -> str:
         """

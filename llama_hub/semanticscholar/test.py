@@ -20,7 +20,7 @@ service_context = ServiceContext.from_defaults(
 )
 
 query_space = "large language models"
-persist_dir = "./citation_" + query_space
+persist_dir = f"./citation_{query_space}"
 
 if not os.path.exists(persist_dir):
     # Load data from Semantic Scholar

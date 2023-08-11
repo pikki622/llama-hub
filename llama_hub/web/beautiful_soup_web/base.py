@@ -27,10 +27,7 @@ def _readthedocs_reader(soup: Any, url: str, **kwargs) -> Tuple[str, Dict[str, A
     from bs4 import BeautifulSoup
 
     links = soup.find_all("a", {"class": "reference internal"})
-    rtd_links = []
-
-    for link in links:
-        rtd_links.append(link["href"])
+    rtd_links = [link["href"] for link in links]
     for i in range(len(rtd_links)):
         if not rtd_links[i].startswith("http"):
             rtd_links[i] = urljoin(url, rtd_links[i])
@@ -81,7 +78,7 @@ def _readmedocs_reader(
                                     f"{child.text} (Reference url: {doc_link}{url}) "
                                 )
                     elif child.string and child.string.strip():
-                        text += child.string.strip() + " "
+                        text += f"{child.string.strip()} "
 
         except IndexError:
             text = None
@@ -190,7 +187,7 @@ class BeautifulSoupWebReader(BaseReader):
                 data, metadata = self.website_extractor[hostname](
                     soup=soup, url=url, include_url_in_text=include_url_in_text
                 )
-                extra_info.update(metadata)
+                extra_info |= metadata
 
             else:
                 data = soup.getText()

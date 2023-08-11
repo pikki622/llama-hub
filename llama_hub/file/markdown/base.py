@@ -43,10 +43,9 @@ class MarkdownReader(BaseReader):
         current_text = ""
 
         for line in lines:
-            header_match = re.match(r"^#+\s", line)
-            if header_match:
+            if header_match := re.match(r"^#+\s", line):
                 if current_header is not None:
-                    if current_text == "" or None:
+                    if current_text == "":
                         continue
                     markdown_tups.append((current_header, current_text))
 
@@ -56,30 +55,29 @@ class MarkdownReader(BaseReader):
                 current_text += line + "\n"
         markdown_tups.append((current_header, current_text))
 
-        if current_header is not None:
-            # pass linting, assert keys are defined
-            markdown_tups = [
-                (re.sub(r"#", "", cast(str, key)).strip(), re.sub(r"<.*?>", "", value))
+        return (
+            [
+                (
+                    re.sub(r"#", "", cast(str, key)).strip(),
+                    re.sub(r"<.*?>", "", value),
+                )
                 for key, value in markdown_tups
             ]
-        else:
-            markdown_tups = [
+            if current_header is not None
+            else [
                 (key, re.sub("<.*?>", "", value)) for key, value in markdown_tups
             ]
-
-        return markdown_tups
+        )
 
     def remove_images(self, content: str) -> str:
         """Get a dictionary of a markdown file from its path."""
         pattern = r"!{1}\[\[(.*)\]\]"
-        content = re.sub(pattern, "", content)
-        return content
+        return re.sub(pattern, "", content)
 
     def remove_hyperlinks(self, content: str) -> str:
         """Get a dictionary of a markdown file from its path."""
         pattern = r"\[(.*?)\]\((.*?)\)"
-        content = re.sub(pattern, r"\1", content)
-        return content
+        return re.sub(pattern, r"\1", content)
     
     def parse_tups(
         self, filepath: Path, content: Optional[str] = None, errors: str = "ignore"
@@ -93,8 +91,7 @@ class MarkdownReader(BaseReader):
             content = self.remove_hyperlinks(content)
         if self._remove_images:
             content = self.remove_images(content)
-        markdown_tups = self.markdown_to_tups(content)
-        return markdown_tups
+        return self.markdown_to_tups(content)
 
     def load_data(
         self,
@@ -106,12 +103,10 @@ class MarkdownReader(BaseReader):
         If content is provided, use that instead of reading from file."""
         tups = self.parse_tups(file, content=content)
         results = []
-        # TODO: don't include headers right now
-        results = [
+        return [
             Document(
-                text=f"\n\n{header}\n{value}" if header else value, 
-                metadata=extra_info or {}
-            ) 
+                text=f"\n\n{header}\n{value}" if header else value,
+                metadata=extra_info or {},
+            )
             for header, value in tups
         ]
-        return results

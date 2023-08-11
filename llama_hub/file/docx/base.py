@@ -20,6 +20,6 @@ class DocxReader(BaseReader):
         metadata = {"file_name": file.name}
 
         if extra_info is not None:
-            metadata.update(extra_info)
+            metadata |= extra_info
 
         return [Document(text=text, extra_info=metadata)]

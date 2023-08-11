@@ -72,11 +72,7 @@ class NewsArticleReader(BaseReader):
                 "publish_date": getattr(article, "publish_date", ""),
             }
 
-            if self.load_text:
-                content = article.text
-            else:
-                content = article.html
-
+            content = article.text if self.load_text else article.html
             if self.use_nlp:
                 metadata["keywords"] = getattr(article, "keywords", [])
                 metadata["summary"] = getattr(article, "summary", "")

@@ -84,11 +84,7 @@ class WordpressReader(BaseReader):
         else:
             num_pages = 1
 
-        if num_pages > current_page:
-            next_page = current_page + 1
-        else:
-            next_page = None
-
+        next_page = current_page + 1 if num_pages > current_page else None
         response_json = json.loads(response.text)
 
         articles = response_json

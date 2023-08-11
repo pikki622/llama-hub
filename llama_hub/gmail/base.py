@@ -118,12 +118,10 @@ class GmailReader(BaseReader, BaseModel):
         result = []
         try:
             for message in messages:
-                message_data = self.get_message_data(message)
-                if not message_data:
-                    continue
-                result.append(message_data)
+                if message_data := self.get_message_data(message):
+                    result.append(message_data)
         except Exception as e:
-            raise Exception("Can't get message data" + str(e))
+            raise Exception(f"Can't get message data{str(e)}")
 
         return result
 
@@ -185,7 +183,7 @@ class GmailReader(BaseReader, BaseModel):
                 body = soup.get_text()
             return body.decode("utf-8")
         except Exception as e:
-            raise Exception("Can't parse message body" + str(e))
+            raise Exception(f"Can't parse message body{str(e)}")
 
 
 if __name__ == "__main__":

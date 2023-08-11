@@ -49,9 +49,9 @@ class RedditReader(BaseReader):
 
                 for post in relevant_posts:
                     posts.append(Document(text=post.selftext))
-                    for top_level_comment in post.comments:
-                        if isinstance(top_level_comment, MoreComments):
-                            continue
-                        posts.append(Document(text=top_level_comment.body))
-
+                    posts.extend(
+                        Document(text=top_level_comment.body)
+                        for top_level_comment in post.comments
+                        if not isinstance(top_level_comment, MoreComments)
+                    )
         return posts

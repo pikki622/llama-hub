@@ -32,13 +32,14 @@ class GladiaAudioTranscriber(BaseReader):
         """Init params."""
         super().__init__(*args, **kwargs)
 
-        self.parser_config = {}
-        self.parser_config["gladia_api_key"] = gladia_api_key
-        self.parser_config["diarization_max_speakers"] = diarization_max_speakers
-        self.parser_config["language"] = language
-        self.parser_config["language_behaviour"] = language_behaviour
-        self.parser_config["target_translation_language"] = target_translation_language
-        self.parser_config["transcription_hint"] = transcription_hint
+        self.parser_config = {
+            "gladia_api_key": gladia_api_key,
+            "diarization_max_speakers": diarization_max_speakers,
+            "language": language,
+            "language_behaviour": language_behaviour,
+            "target_translation_language": target_translation_language,
+            "transcription_hint": transcription_hint,
+        }
 
     def load_data(
         self, file: Path, extra_info: Optional[Dict] = None
@@ -54,7 +55,7 @@ class GladiaAudioTranscriber(BaseReader):
             # Extract audio from video
             audio = video.split_to_mono()[0]
 
-            file = str(file)[:-4] + ".mp3"
+            file = f"{str(file)[:-4]}.mp3"
             # export file
             audio.export(file, format="mp3")
 

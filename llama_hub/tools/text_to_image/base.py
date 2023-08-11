@@ -37,8 +37,7 @@ class TextToImageToolSpec(BaseToolSpec):
                 n=n,
                 size=size
             )
-            images = [image['url'] for image in response['data']]
-            return images
+            return [image['url'] for image in response['data']]
         except openai.error.OpenAIError as e:
             return e.error
 
@@ -64,8 +63,7 @@ class TextToImageToolSpec(BaseToolSpec):
                 n=n,
                 size=size
             )
-            images = [image['url'] for image in response['data']]
-            return images
+            return [image['url'] for image in response['data']]
         except openai.error.OpenAIError as e:
             return e.error
 

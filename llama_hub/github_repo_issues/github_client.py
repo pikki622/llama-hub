@@ -70,12 +70,12 @@ class GitHubIssuesClient:
         """
         if github_token is None:
             github_token = os.getenv("GITHUB_TOKEN")
-            if github_token is None:
-                raise ValueError(
-                    "Please provide a GitHub token. "
-                    + "You can do so by passing it as an argument to the GitHubReader,"
-                    + "or by setting the GITHUB_TOKEN environment variable."
-                )
+        if github_token is None:
+            raise ValueError(
+                "Please provide a GitHub token. "
+                + "You can do so by passing it as an argument to the GitHubReader,"
+                + "or by setting the GITHUB_TOKEN environment variable."
+            )
 
         self._base_url = base_url
         self._api_version = api_version

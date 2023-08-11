@@ -44,9 +44,7 @@ class FlatPdfReader(BaseReader):
             )
             pdf_content: str = ""
 
-            shutil.rmtree(
-                str(pathlib.Path().resolve()) + "/flat_pdf", ignore_errors=True
-            )
+            shutil.rmtree(f"{str(pathlib.Path().resolve())}/flat_pdf", ignore_errors=True)
             os.makedirs(work_dir)
 
             pdf_pages_count: int = self.convert_pdf_in_images(
@@ -55,7 +53,7 @@ class FlatPdfReader(BaseReader):
 
             for page_number in range(0, pdf_pages_count):
                 document = self.image_loader.load_data(
-                    file=Path(work_dir + f"/page-{page_number}.png")
+                    file=Path(f"{work_dir}/page-{page_number}.png")
                 )
                 pdf_content += document[0].text
             return Document(text=pdf_content)
@@ -63,9 +61,7 @@ class FlatPdfReader(BaseReader):
         except Exception as e:
             warnings.warn(f"{str(e)}")
         finally:
-            shutil.rmtree(
-                str(pathlib.Path().resolve()) + "/flat_pdf", ignore_errors=True
-            )
+            shutil.rmtree(f"{str(pathlib.Path().resolve())}/flat_pdf", ignore_errors=True)
 
     def convert_pdf_in_images(self, pdf_dir: Path, work_dir: str) -> int:
         """

@@ -96,10 +96,10 @@ class DatabaseToolSpec(BaseToolSpec, BaseReader):
             else:
                 result = connection.execute(text(query))
 
-            for item in result.fetchall():
-                # fetch each item
-                doc_str = ", ".join([str(entry) for entry in item])
-                documents.append(Document(text=doc_str))
+            documents.extend(
+                Document(text=", ".join([str(entry) for entry in item]))
+                for item in result.fetchall()
+            )
         return documents
 
     def list_tables(self) -> List[str]:

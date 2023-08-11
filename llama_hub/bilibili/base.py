@@ -22,25 +22,20 @@ class BilibiliTranscriptReader(BaseReader):
         v = video.Video(bvid=bvid)
         # Get video info and basic infor
         video_info = sync(v.get_info())
-        title = video_info["title"]
-        desc = video_info["desc"]
-
-        # Get subtitle url
-        sub_list = video_info["subtitle"]["list"]
-        if sub_list:
+        if sub_list := video_info["subtitle"]["list"]:
             sub_url = sub_list[0]["subtitle_url"]
             result = requests.get(sub_url)
             raw_sub_titles = json.loads(result.content)["body"]
             raw_transcript = " ".join([c["content"] for c in raw_sub_titles])
-            # Add basic video info to transcript
-            raw_transcript_with_meta_info = f"Video Title: {title}, description: {desc}\nTranscript: {raw_transcript}"
-            return raw_transcript_with_meta_info
+            title = video_info["title"]
+            desc = video_info["desc"]
+
+            return f"Video Title: {title}, description: {desc}\nTranscript: {raw_transcript}"
         else:
-            raw_transcript = ""
             warnings.warn(
                 f"No subtitles found for video: {bili_url}. Return Empty transcript."
             )
-            return raw_transcript
+            return ""
 
     def load_data(self, video_urls: List[str], **load_kwargs: Any) -> List[Document]:
         """

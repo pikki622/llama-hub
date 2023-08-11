@@ -126,7 +126,7 @@ class GoogleDriveReader(BaseReader):
             fileids_meta = []
             if folder_id:
                 folder_mime_type = "application/vnd.google-apps.folder"
-                query = "'" + folder_id + "' in parents"
+                query = f"'{folder_id}' in parents"
 
                 # Add mimeType filter to query
                 if mime_types:
@@ -202,9 +202,7 @@ class GoogleDriveReader(BaseReader):
             return fileids_meta
 
         except Exception as e:
-            logger.error(
-                "An error occurred while getting fileids metadata: {}".format(e)
-            )
+            logger.error(f"An error occurred while getting fileids metadata: {e}")
 
     def _download_file(self, fileid: str, filename: str) -> str:
         """Download the file with fileid and filename
@@ -253,7 +251,7 @@ class GoogleDriveReader(BaseReader):
 
             return new_file_name
         except Exception as e:
-            logger.error("An error occurred while downloading file: {}".format(e))
+            logger.error(f"An error occurred while downloading file: {e}")
 
     def _load_data_fileids_meta(self, fileids_meta: List[List[str]]) -> List[Document]:
         """Load data from fileids metadata
@@ -316,11 +314,9 @@ class GoogleDriveReader(BaseReader):
                 fileids_meta.extend(
                     self._get_fileids_meta(file_id=file_id, mime_types=mime_types)
                 )
-            documents = self._load_data_fileids_meta(fileids_meta)
-
-            return documents
+            return self._load_data_fileids_meta(fileids_meta)
         except Exception as e:
-            logger.error("An error occurred while loading with fileid: {}".format(e))
+            logger.error(f"An error occurred while loading with fileid: {e}")
 
     def _load_from_folder(self, folder_id: str, mime_types: list) -> List[Document]:
         """Load data from folder_id
@@ -334,10 +330,9 @@ class GoogleDriveReader(BaseReader):
             fileids_meta = self._get_fileids_meta(
                 folder_id=folder_id, mime_types=mime_types
             )
-            documents = self._load_data_fileids_meta(fileids_meta)
-            return documents
+            return self._load_data_fileids_meta(fileids_meta)
         except Exception as e:
-            logger.error("An error occurred while loading from folder: {}".format(e))
+            logger.error(f"An error occurred while loading from folder: {e}")
 
     def load_data(
         self,

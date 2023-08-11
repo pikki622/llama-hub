@@ -36,13 +36,13 @@ class PagedCSVReader(BaseReader):
         docs = []
         with open(file, "r", encoding=self._encoding) as fp:
             csv_reader = csv.DictReader(fp)  # type: ignore
-            for row in csv_reader:
-                docs.append(
-                    Document(
-                        text="\n".join(
-                            f"{k.strip()}: {v.strip()}" for k, v in row.items()
-                        ),
-                        extra_info=extra_info or {},
-                    )
+            docs.extend(
+                Document(
+                    text="\n".join(
+                        f"{k.strip()}: {v.strip()}" for k, v in row.items()
+                    ),
+                    extra_info=extra_info or {},
                 )
+                for row in csv_reader
+            )
         return docs

@@ -59,11 +59,7 @@ class FirestoreReader(BaseReader):
 
         ref = self.db.collection(parts[0])
         for i in range(1, len(parts)):
-            if i % 2 == 0:
-                ref = ref.collection(parts[i])
-            else:
-                ref = ref.document(parts[i])
-
+            ref = ref.collection(parts[i]) if i % 2 == 0 else ref.document(parts[i])
         doc = ref.get()
         if not doc.exists:
             raise ValueError(f"No such document: {document_url}")

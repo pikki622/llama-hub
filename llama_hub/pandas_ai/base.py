@@ -85,34 +85,30 @@ class PandasAIReader(BaseReader):
         )
         if is_conversational_answer:
             return [Document(text=result)]
-        else:
-            if isinstance(result, (np.generic)):
-                result = pd.Series(result)
-            elif isinstance(result, (pd.Series, pd.DataFrame)):
-                pass
-            else:
-                raise ValueError("Unexpected type for result: {}".format(type(result)))
-            # if not conversational answer, use Pandas CSV Reader
+        if isinstance(result, (np.generic)):
+            result = pd.Series(result)
+        elif not isinstance(result, (pd.Series, pd.DataFrame)):
+            raise ValueError(f"Unexpected type for result: {type(result)}")
+        # if not conversational answer, use Pandas CSV Reader
 
-            try:
-                from llama_hub.utils import import_loader
+        try:
+            from llama_hub.utils import import_loader
 
-                PandasCSVReader = import_loader("PandasCSVReader")
-            except ImportError:
-                PandasCSVReader = download_loader("PandasCSVReader")
+            PandasCSVReader = import_loader("PandasCSVReader")
+        except ImportError:
+            PandasCSVReader = download_loader("PandasCSVReader")
 
-            reader = PandasCSVReader(
-                concat_rows=self._concat_rows,
-                col_joiner=self._col_joiner,
-                row_joiner=self._row_joiner,
-                pandas_config=self._pandas_config,
-            )
+        reader = PandasCSVReader(
+            concat_rows=self._concat_rows,
+            col_joiner=self._col_joiner,
+            row_joiner=self._row_joiner,
+            pandas_config=self._pandas_config,
+        )
 
-            with TemporaryDirectory() as tmpdir:
-                outpath = Path(tmpdir) / "out.csv"
-                with outpath.open("w") as f:
-                    # TODO: add option to specify index=False
-                    result.to_csv(f, index=False)
+        with TemporaryDirectory() as tmpdir:
+            outpath = Path(tmpdir) / "out.csv"
+            with outpath.open("w") as f:
+                # TODO: add option to specify index=False
+                result.to_csv(f, index=False)
 
-                docs = reader.load_data(outpath)
-                return docs
+            return reader.load_data(outpath)

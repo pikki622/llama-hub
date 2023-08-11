@@ -52,8 +52,6 @@ class WeatherReader(BaseReader):
 
         results = []
         for place in places:
-            info_dict = {}
-            extra_info = {}
             list_of_locations = reg.locations_for(city_name=place)
 
             try:
@@ -67,11 +65,8 @@ class WeatherReader(BaseReader):
 
             res = mgr.one_call(lat=lat, lon=lon)
 
-            extra_info["latitude"] = lat
-            extra_info["longitude"] = lon
-            extra_info["timezone"] = res.timezone
-            info_dict["location"] = place
-            info_dict["current weather"] = res.current.to_dict()
+            extra_info = {"latitude": lat, "longitude": lon, "timezone": res.timezone}
+            info_dict = {"location": place, "current weather": res.current.to_dict()}
             if res.forecast_daily:
                 info_dict["daily forecast"] = [i.to_dict() for i in res.forecast_daily]
             if res.forecast_hourly:

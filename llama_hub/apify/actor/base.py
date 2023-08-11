@@ -57,9 +57,7 @@ class ApifyActor(BaseReader):
             ApifyDataset = download_loader("ApifyDataset")
 
         reader = ApifyDataset(self.apify_api_token)
-        documents = reader.load_data(
+        return reader.load_data(
             dataset_id=actor_call.get("defaultDatasetId"),
             dataset_mapping_function=dataset_mapping_function,
         )
-
-        return documents

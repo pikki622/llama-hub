@@ -105,12 +105,10 @@ class GmailToolSpec(BaseToolSpec):
         result = []
         try:
             for message in messages:
-                message_data = self.get_message_data(message)
-                if not message_data:
-                    continue
-                result.append(message_data)
+                if message_data := self.get_message_data(message):
+                    result.append(message_data)
         except Exception as e:
-            raise Exception("Can't get message data" + str(e))
+            raise Exception(f"Can't get message data{str(e)}")
 
         return result
 
@@ -170,7 +168,7 @@ class GmailToolSpec(BaseToolSpec):
                 body = soup.get_text()
             return body.decode("ascii")
         except Exception as e:
-            raise Exception("Can't parse message body" + str(e))
+            raise Exception(f"Can't parse message body{str(e)}")
 
     def _build_draft(
         self,
@@ -187,8 +185,7 @@ class GmailToolSpec(BaseToolSpec):
 
         encoded_message = base64.urlsafe_b64encode(email_message.as_bytes()).decode()
 
-        message_template = {"message": {"raw": encoded_message}}
-        return message_template
+        return {"message": {"raw": encoded_message}}
 
     def create_draft(
         self,
@@ -208,14 +205,12 @@ class GmailToolSpec(BaseToolSpec):
         self._cache_service()
         service = self.service
 
-        draft = (
+        return (
             service.users()
             .drafts()
             .create(userId="me", body=self._build_draft(to, subject, message))
             .execute()
         )
-
-        return draft
 
     def update_draft(
         self,
@@ -270,8 +265,7 @@ class GmailToolSpec(BaseToolSpec):
         """
         self._cache_service()
         service = self.service
-        draft = service.users().drafts().get(userId="me", id=draft_id).execute()
-        return draft
+        return service.users().drafts().get(userId="me", id=draft_id).execute()
 
     def send_draft(self, draft_id: str = None) -> str:
         """Sends a draft email.
@@ -283,7 +277,9 @@ class GmailToolSpec(BaseToolSpec):
         """
         self._cache_service()
         service = self.service
-        message = (
-            service.users().drafts().send(userId="me", body={"id": draft_id}).execute()
+        return (
+            service.users()
+            .drafts()
+            .send(userId="me", body={"id": draft_id})
+            .execute()
         )
-        return message
