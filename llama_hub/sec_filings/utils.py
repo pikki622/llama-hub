@@ -48,7 +48,7 @@ def form_request_payload(
     start_index: int,
     query: str,
 ) -> dict:
-    payload = {
+    return {
         "dateRange": "custom",
         "startdt": start_date,
         "enddt": end_date,
@@ -57,7 +57,6 @@ def form_request_payload(
         "from": start_index,
         "q": query,
     }
-    return payload
 
 
 def build_filing_metadata_from_hit(hit: dict) -> FilingMetadata:

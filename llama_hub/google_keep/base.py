@@ -52,20 +52,17 @@ class GoogleKeepReader(BaseReader):
         import gkeepapi
 
         """Get a Google Keep object with login."""
-        # Read username and password from keep_credentials.json
-        if os.path.exists("keep_credentials.json"):
-            with open("keep_credentials.json", "r") as f:
-                credentials = json.load(f)
-        else:
+        if not os.path.exists("keep_credentials.json"):
             raise RuntimeError('Failed to load keep_credentials.json.')
 
+        with open("keep_credentials.json", "r") as f:
+            credentials = json.load(f)
         keep = gkeepapi.Keep()
 
-        success = keep.login(credentials["username"], credentials["password"])
-        if not success:
+        if success := keep.login(credentials["username"], credentials["password"]):
+            return keep
+        else:
             raise RuntimeError('Failed to login to Google Keep.')
-
-        return keep
 
 
 if __name__ == "__main__":

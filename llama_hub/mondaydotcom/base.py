@@ -20,19 +20,16 @@ class MondayReader(BaseReader):
         self.api_url = "https://api.monday.com/v2"
 
     def _parse_item_values(self, cv) -> Dict[str, str]:
-        data = {}
-        data["title"] = cv["title"]
-        data["value"] = cv["text"]
-
-        return data
+        return {"title": cv["title"], "value": cv["text"]}
 
     def _parse_data(self, item) -> Dict[str, str]:
-        data = {}
-        data["id"] = item["id"]
-        data["name"] = item["name"]
-        data["values"] = list(map(self._parse_item_values, list(item["column_values"])))
-
-        return data
+        return {
+            "id": item["id"],
+            "name": item["name"],
+            "values": list(
+                map(self._parse_item_values, list(item["column_values"]))
+            ),
+        }
 
     def _perform_request(self, board_id) -> Dict[str, str]:
         headers = {"Authorization": self.api_key}

@@ -3,6 +3,7 @@ Github readers utils.
 
 This module contains utility functions for the Github readers.
 """
+
 import asyncio
 import os
 import sys
@@ -10,18 +11,11 @@ import time
 from abc import ABC, abstractmethod
 from typing import List, Tuple
 
-if "pytest" in sys.modules:
-    from llama_hub.github_repo.github_client import (
-        GitBlobResponseModel,
-        GithubClient,
-        GitTreeResponseModel,
-    )
-else:
-    from llama_hub.github_repo.github_client import (
-        GitBlobResponseModel,
-        GithubClient,
-        GitTreeResponseModel,
-    )
+from llama_hub.github_repo.github_client import (
+    GitBlobResponseModel,
+    GithubClient,
+    GitTreeResponseModel,
+)
 
 
 def print_if_verbose(verbose: bool, message: str) -> None:
@@ -133,8 +127,8 @@ class BufferedGitBlobDataIterator(BufferedAsyncIterator):
         self._verbose = verbose
         if loop is None:
             loop = asyncio.get_event_loop()
-            if loop is None:
-                raise ValueError("No event loop found")
+        if loop is None:
+            raise ValueError("No event loop found")
 
     async def _fill_buffer(self) -> None:
         """
@@ -144,10 +138,10 @@ class BufferedGitBlobDataIterator(BufferedAsyncIterator):
         The blobs are retrieved in batches of size buffer_size.
         """
         del self._buffer[:]
-        self._buffer = []
         start = self._index
         end = min(start + self._buffer_size, len(self._blobs_and_paths))
 
+        self._buffer = []
         if start >= end:
             return
 
@@ -167,8 +161,7 @@ class BufferedGitBlobDataIterator(BufferedAsyncIterator):
                 (blob.path, blob.size) for blob, _ in self._blobs_and_paths[start:end]
             ]
             print(
-                "Time to get blobs ("
-                + f"{blob_names_and_sizes}"
+                f"Time to get blobs ({blob_names_and_sizes}"
                 + f"): {end_t - start_t:.2f} seconds"
             )
 

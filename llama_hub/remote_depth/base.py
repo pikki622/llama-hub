@@ -47,7 +47,7 @@ class RemoteDepthReader(BaseReader):
             for link in tqdm(links):
                 """Checking if the link belongs the provided domain."""
                 if (self.domain_lock and link.find(url) > -1) or (not self.domain_lock):
-                    print("Loading link: " + link)
+                    print(f"Loading link: {link}")
                     if link in links_visited:
                         continue
                     if link:
@@ -55,18 +55,16 @@ class RemoteDepthReader(BaseReader):
                         new_links.extend(self.get_links(link))
                     links_visited.append(link)
                 else:
-                    print("Link ignored: " + link)
+                    print(f"Link ignored: {link}")
             new_links = list(set(new_links))
             links = new_links
         print(f"Found {len(urls)} links at depth {self.depth}.")
-        for depth_i in urls:
-            for url in urls[depth_i]:
+        for depth_i, value in urls.items():
+            for url in value:
                 try:
                     documents.extend(remote_reader.load_data(url))
                 except Exception as e:
                     print(f"Error reading {url} at depth {depth_i}: {e}")
-                    continue
-
         return documents
 
     @staticmethod
@@ -86,10 +84,7 @@ class RemoteDepthReader(BaseReader):
         links = soup.find_all("a")
         result = []
         for link in links:
-            if isinstance(link, str):
-                href = link
-            else:
-                href = link.get("href")
+            href = link if isinstance(link, str) else link.get("href")
             if href is not None:
                 if not self.is_url(href):
                     href = urljoin(url, href)

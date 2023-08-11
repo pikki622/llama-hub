@@ -5,6 +5,7 @@ Retrieves the contents of a Github repository and returns a list of documents.
 The documents are either the contents of the files in the repository or
 the text extracted from the files using the parser.
 """
+
 import os
 import asyncio
 import base64
@@ -29,11 +30,6 @@ if "pytest" in sys.modules:
         GithubClient,
         GitTreeResponseModel,
     )
-    from llama_hub.github_repo.utils import (
-        BufferedGitBlobDataIterator,
-        print_if_verbose,
-        get_file_extension,
-    )
 else:
     from llama_hub.github_repo.github_client import (
         BaseGithubClient,
@@ -42,12 +38,11 @@ else:
         GitCommitResponseModel,
         GitTreeResponseModel,
     )
-    from llama_hub.github_repo.utils import (
-        BufferedGitBlobDataIterator,
-        print_if_verbose,
-        get_file_extension,
-    )
-
+from llama_hub.github_repo.utils import (
+    BufferedGitBlobDataIterator,
+    print_if_verbose,
+    get_file_extension,
+)
 logger = logging.getLogger(__name__)
 
 

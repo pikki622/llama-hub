@@ -38,8 +38,8 @@ class IPYNBReader(BaseReader):
         # remove the first element, which is empty
         splits.pop(0)
 
-        if self._concatenate:
-            docs = [Document(text="\n\n".join(splits))]
-        else:
-            docs = [Document(text=s) for s in splits]
-        return docs
+        return (
+            [Document(text="\n\n".join(splits))]
+            if self._concatenate
+            else [Document(text=s) for s in splits]
+        )

@@ -31,17 +31,18 @@ class HatenaBlogReader(BaseReader):
         self.username = username
 
     def load_data(self) -> List[Document]:
-        results = []
         articles = self.get_all_articles()
-        for a in articles:
-            results.append(
-                Document(
-                    text=a.content,
-                    extra_info={"title": a.title, "published": a.published, "url": a.url},
-                )
+        return [
+            Document(
+                text=a.content,
+                extra_info={
+                    "title": a.title,
+                    "published": a.published,
+                    "url": a.url,
+                },
             )
-
-        return results
+            for a in articles
+        ]
 
     def get_all_articles(self) -> List[Article]:
         articles: List[Article] = []
@@ -84,8 +85,7 @@ class HatenaBlogReader(BaseReader):
                 article.content = entry.find("content").string.strip()
             articles.append(article)
 
-        next = soup.find("link", attrs={"rel": "next"})
-        if next:
+        if next := soup.find("link", attrs={"rel": "next"}):
             next_page = next.get("href")
 
         return {"articles": articles, "next_page": next_page}

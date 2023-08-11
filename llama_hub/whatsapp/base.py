@@ -37,8 +37,7 @@ class WhatsappChatLoader(BaseReader):
         logging.debug(f"> Number of messages: {len(df)}.")
 
         docs = []
-        n = 0
-        for row in df.itertuples():
+        for n, row in enumerate(df.itertuples(), start=1):
             extra_info = {
                 "source": str(path).split("/")[-1].replace(".txt", ""),
                 "author": row.author,
@@ -57,7 +56,6 @@ class WhatsappChatLoader(BaseReader):
                 )
             )
 
-            n += 1
             logging.debug(f"Added {n} of {len(df)} messages.")
 
         logging.debug(f"> Document creation for {path} is complete.")

@@ -186,11 +186,11 @@ class SECExtractor:
             for fm in filing_metadata
         ]
         for idx, fm in enumerate(acc_nums_yrs[:-1]):
-            if fm[0] == None:
+            if fm[0] is None:
                 fm[0] = acc_nums_yrs[idx + 1][0]
         for acy in acc_nums_yrs:
             if tic not in final_dict:
-                final_dict.update({tic: []})
+                final_dict[tic] = []
             final_dict[tic].append(
                 {"year": acy[0], "accession_number": acy[1], "url": acy[2]}
             )
@@ -211,10 +211,7 @@ class SECExtractor:
         elif self.filing_type == "10-Q":
             matches = re.findall("20\d{4}", details)
 
-        if matches:
-            return matches[-1]  # Return the first match
-        else:
-            return None  # In case no match is found
+        return matches[-1] if matches else None
 
     def get_all_text(self, section, all_narratives):
         """Join all the text from a section
@@ -228,9 +225,7 @@ class SECExtractor:
         """
         all_texts = []
         for text_dict in all_narratives[section]:
-            for key, val in text_dict.items():
-                if key == "text":
-                    all_texts.append(val)
+            all_texts.extend(val for key, val in text_dict.items() if key == "text")
         return " ".join(all_texts)
 
     def get_text_from_url(self, url: str):
@@ -276,7 +271,6 @@ class SECExtractor:
                 f"SEC document filing type {sec_document.filing_type} is not supported, "
                 f"must be one of {','.join(VALID_FILING_TYPES)}"
             )
-        results = {}
         if m_section == [ALL_SECTIONS]:
             filing_type = sec_document.filing_type
             if filing_type in REPORT_TYPES:
@@ -289,11 +283,12 @@ class SECExtractor:
 
             else:
                 m_section = [enum.name for enum in SECTIONS_S1]
-        for section in m_section:
-            results[section] = sec_document.get_section_narrative(
+        results = {
+            section: sec_document.get_section_narrative(
                 section_string_to_enum[section]
             )
-
+            for section in m_section
+        }
         for i, section_regex in enumerate(m_section_regex):
             regex_num = get_regex_enum(section_regex)
             with timeout(seconds=5):

@@ -34,7 +34,7 @@ class ChatGPTPluginToolSpec(BaseToolSpec):
             raise ValueError(f'API type must be "openapi", not "{manifest["api"]["type"]}"')
 
         if manifest['auth']['type'] != 'none':
-            raise ValueError(f'Authentication cannot be supported for ChatGPT plugins')
+            raise ValueError('Authentication cannot be supported for ChatGPT plugins')
 
         self.openapi = OpenAPIToolSpec(url=manifest['api']['url'])
 

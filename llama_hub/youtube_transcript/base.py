@@ -59,9 +59,8 @@ class YoutubeTranscriptReader(BaseReader):
     @staticmethod
     def _extract_video_id(yt_link) -> Optional[str]:
         for pattern in YOUTUBE_URL_PATTERNS:
-            match = re.search(pattern, yt_link)
-            if match:
-                return match.group(1)
+            if match := re.search(pattern, yt_link):
+                return match[1]
 
         # return None if no match is found
         return None

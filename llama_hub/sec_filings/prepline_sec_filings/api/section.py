@@ -131,10 +131,11 @@ def convert_to_isd_csv(results: dict) -> str:
     for section, section_narrative in results.items():
         rows: List[Dict[str, str]] = convert_to_isd(section_narrative)
         for row in rows:
-            new_row_item = dict()
-            new_row_item["section"] = section
-            new_row_item["element_type"] = row["type"]
-            new_row_item["text"] = row["text"]
+            new_row_item = {
+                "section": section,
+                "element_type": row["type"],
+                "text": row["text"],
+            }
             new_rows.append(new_row_item)
 
     with io.StringIO() as buffer:
@@ -165,7 +166,6 @@ def pipeline_api(
             f"SEC document filing type {sec_document.filing_type} is not supported, "
             f"must be one of {','.join(VALID_FILING_TYPES)}"
         )
-    results = {}
     if m_section == [ALL_SECTIONS]:
         filing_type = sec_document.filing_type
         if filing_type in REPORT_TYPES:
@@ -178,10 +178,12 @@ def pipeline_api(
 
         else:
             m_section = [enum.name for enum in SECTIONS_S1]
-    for section in m_section:
-        results[section] = sec_document.get_section_narrative(
+    results = {
+        section: sec_document.get_section_narrative(
             section_string_to_enum[section]
         )
+        for section in m_section
+    }
     for i, section_regex in enumerate(m_section_regex):
         regex_enum = get_regex_enum(section_regex)
         with timeout(seconds=5):
@@ -222,12 +224,12 @@ def get_validated_mimetype(file):
     if not content_type or content_type == "application/octet-stream":
         content_type = mimetypes.guess_type(str(file.filename))[0]
 
-        # Some filetypes missing for this library, just hardcode them for now
-        if not content_type:
-            if file.filename.endswith(".md"):
-                content_type = "text/markdown"
-            elif file.filename.endswith(".msg"):
-                content_type = "message/rfc822"
+    # Some filetypes missing for this library, just hardcode them for now
+    if not content_type:
+        if file.filename.endswith(".md"):
+            content_type = "text/markdown"
+        elif file.filename.endswith(".msg"):
+            content_type = "message/rfc822"
 
     allowed_mimetypes_str = os.environ.get("UNSTRUCTURED_ALLOWED_MIMETYPES")
     if allowed_mimetypes_str is not None:
@@ -311,9 +313,7 @@ def ungz_file(file: UploadFile, gz_uncompressed_content_type=None) -> UploadFile
             return str(mimetypes.guess_type(filename)[0])
 
     filename = str(file.filename) if file.filename else ""
-    if filename.endswith(".gz"):
-        filename = filename[:-3]
-
+    filename = filename.removesuffix(".gz")
     gzip_file = gzip.open(file.file).read()
     return UploadFile(
         file=io.BytesIO(gzip_file),

@@ -162,8 +162,7 @@ class StackoverflowReader(BaseReader):
         # not sure if this filter is shared globally, or only to a particular team
         filter_fragment = "&filter=!nOedRLbqzB"
         page_fragment = f"&page={page}"
-        url = f"https://api.stackoverflowteams.com/2.3/{doc_type}?{team_fragment}{filter_fragment}{page_fragment}"
-        return url
+        return f"https://api.stackoverflowteams.com/2.3/{doc_type}?{team_fragment}{filter_fragment}{page_fragment}"
 
 
 if __name__ == "__main__":

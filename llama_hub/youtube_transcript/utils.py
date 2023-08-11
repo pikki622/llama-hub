@@ -12,7 +12,4 @@ def is_youtube_video(url: str) -> bool:
     """
     Returns whether the passed in `url` matches the various YouTube URL formats
     """
-    for pattern in YOUTUBE_URL_PATTERNS:
-        if re.search(pattern, url):
-            return True
-    return False
+    return any(re.search(pattern, url) for pattern in YOUTUBE_URL_PATTERNS)

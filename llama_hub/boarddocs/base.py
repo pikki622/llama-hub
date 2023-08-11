@@ -26,7 +26,7 @@ class BoardDocsReader(BaseReader):
         """Initialize with parameters."""
         self.site = site
         self.committee_id = committee_id
-        self.base_url = "https://go.boarddocs.com/" + site + "/Board.nsf"
+        self.base_url = f"https://go.boarddocs.com/{site}/Board.nsf"
 
         # set up the headers required for the server to answer
         self.headers = {
@@ -52,13 +52,13 @@ class BoardDocsReader(BaseReader):
         Returns:
             List[dict]: A list of meetings, each with a meetingID, date, and unid
         """
-        meeting_list_url = self.base_url + "/BD-GetMeetingsList?open"
+        meeting_list_url = f"{self.base_url}/BD-GetMeetingsList?open"
 
-        data = "current_committee_id=" + self.committee_id
+        data = f"current_committee_id={self.committee_id}"
         response = requests.post(meeting_list_url, headers=self.headers, data=data)
         meetingsData = json.loads(response.text)
 
-        meetings = [
+        return [
             {
                 "meetingID": meeting.get("unique", None),
                 "date": meeting.get("numberdate", None),
@@ -66,7 +66,6 @@ class BoardDocsReader(BaseReader):
             }
             for meeting in meetingsData
         ]
-        return meetings
 
     def process_meeting(
         self, meeting_id: str, index_pdfs: bool = True
@@ -75,10 +74,10 @@ class BoardDocsReader(BaseReader):
         Returns documents from the given meeting
         """
 
-        agenda_url = self.base_url + "/PRINT-AgendaDetailed"
+        agenda_url = f"{self.base_url}/PRINT-AgendaDetailed"
 
         # set the meetingID & committee
-        data = "id=" + meeting_id + "&" + "current_committee_id=" + self.committee_id
+        data = f"id={meeting_id}&current_committee_id={self.committee_id}"
 
         # POST the request!
         response = requests.post(agenda_url, headers=self.headers, data=data)
@@ -93,9 +92,6 @@ class BoardDocsReader(BaseReader):
         [fd.a.get("href") for fd in soup.find_all("div", {"class": "public-file"})]
         agenda_data = html2text.html2text(response.text)
 
-        # TODO: index the linked PDFs in agenda_files!
-
-        docs = []
         agenda_doc = Document(
             text=agenda_data,
             doc_id=meeting_id,
@@ -106,8 +102,7 @@ class BoardDocsReader(BaseReader):
                 "url": agenda_url,
             },
         )
-        docs.append(agenda_doc)
-        return docs
+        return [agenda_doc]
 
     def load_data(
         self, meeting_ids: Optional[List[str]] = None, **load_kwargs: Any

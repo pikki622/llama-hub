@@ -69,16 +69,15 @@ class SimpleCouchDBReader(BaseReader):
         if type(results) is not dict and results.rows is not None:
             for row in results.rows:
                 # check that the id field exists
-                if "id" not in row:
+                if "id" in row:
+                    documents.append(Document(text=json.dumps(row.doc)))
+                else:
                     raise ValueError("`id` field not found in CouchDB document.")
-                documents.append(Document(text=json.dumps(row.doc)))
-        else:
-            # only one result
-            if results.get("docs") is not None:
-                for item in results.get("docs"):
-                    # check that the _id field exists
-                    if "_id" not in item:
-                        raise ValueError("`_id` field not found in CouchDB document.")
-                    documents.append(Document(text=json.dumps(item)))
+        elif results.get("docs") is not None:
+            for item in results.get("docs"):
+                # check that the _id field exists
+                if "_id" not in item:
+                    raise ValueError("`_id` field not found in CouchDB document.")
+                documents.append(Document(text=json.dumps(item)))
 
         return documents

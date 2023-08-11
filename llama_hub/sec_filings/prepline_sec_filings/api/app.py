@@ -19,8 +19,7 @@ app = FastAPI(
     openapi_url="/sec-filings/openapi.json",
 )
 
-allowed_origins = os.environ.get("ALLOWED_ORIGINS", None)
-if allowed_origins:
+if allowed_origins := os.environ.get("ALLOWED_ORIGINS", None):
     from fastapi.middleware.cors import CORSMiddleware
 
     app.add_middleware(

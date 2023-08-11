@@ -67,11 +67,7 @@ class ImageTabularChartReader(BaseReader):
         if image.mode != "RGB":
             image = image.convert("RGB")
 
-        # Encode image into base64 string and keep in document
-        image_str: Optional[str] = None
-        if self._keep_image:
-            image_str = img_2_b64(image)
-
+        image_str = img_2_b64(image) if self._keep_image else None
         # Parse image into text
         model = self._parser_config["model"]
         processor = self._parser_config["processor"]
@@ -85,9 +81,7 @@ class ImageTabularChartReader(BaseReader):
         inputs = processor(image, self._prompt, return_tensors="pt").to(device, dtype)
 
         out = model.generate(**inputs, max_new_tokens=self._max_output_tokens)
-        text_str = "Figure or chart with tabular data: " + processor.decode(
-            out[0], skip_special_tokens=True
-        )
+        text_str = f"Figure or chart with tabular data: {processor.decode(out[0], skip_special_tokens=True)}"
 
         return [
             ImageDocument(

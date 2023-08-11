@@ -49,7 +49,7 @@ class AudioTranscriber(BaseReader):
             # Extract audio from video
             audio = video.split_to_mono()[0]
 
-            file_str = str(file)[:-4] + ".mp3"
+            file_str = f"{str(file)[:-4]}.mp3"
             # export file
             audio.export(file_str, format="mp3")
 

@@ -82,10 +82,9 @@ class GoogleDocsReader(BaseReader):
         if os.path.exists("token.json"):
             creds = Credentials.from_authorized_user_file("token.json", SCOPES)
         elif os.path.exists("service_account.json"):
-            creds = service_account.Credentials.from_service_account_file(
+            return service_account.Credentials.from_service_account_file(
                 "service_account.json", scopes=SCOPES
             )
-            return creds
         # If there are no (valid) credentials available, let the user log in.
         if not creds or not creds.valid:
             if creds and creds.expired and creds.refresh_token:
@@ -108,9 +107,7 @@ class GoogleDocsReader(BaseReader):
             element: a ParagraphElement from a Google Doc.
         """
         text_run = element.get("textRun")
-        if not text_run:
-            return ""
-        return text_run.get("content")
+        return "" if not text_run else text_run.get("content")
 
     def _read_structural_elements(self, elements: List[Any]) -> Any:
         """Recurse through a list of Structural Elements.

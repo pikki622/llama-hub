@@ -45,14 +45,11 @@ docstring: {ast.get_docstring(node)}
                         """
                     
         def get_functions(self, names: List[str]) -> str:
-            """
+                """
             Use this function to get the name and arguments of a list of function definition in the python file.
 
             Args:
                 name (List[str]): The names of the functions to retrieve
             """
-            functions = ""
-            for name in names:
-                functions += self.get_function(name) + '\n'
-            return functions
+                return "".join(self.get_function(name) + '\n' for name in names)
 

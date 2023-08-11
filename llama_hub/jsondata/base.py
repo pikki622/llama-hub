@@ -19,7 +19,7 @@ def _depth_first_yield(json_data: Dict, path: List[str]) -> Generator[str, None,
             new_path.append(key)
             yield from _depth_first_yield(value, new_path)
     elif isinstance(json_data, list):
-        for _, value in enumerate(json_data):
+        for value in json_data:
             yield from _depth_first_yield(value, path)
     else:
         path.append(str(json_data))
@@ -43,10 +43,7 @@ class JSONDataReader(BaseReader):
 
     def load_data(self, input_data: Union[str, Dict]) -> List[Document]:
         """Load data from the input file."""
-        if isinstance(input_data, str):
-            data = json.loads(input_data)
-        else:
-            data = input_data
+        data = json.loads(input_data) if isinstance(input_data, str) else input_data
         json_output = json.dumps(data, indent=0)
         lines = json_output.split("\n")
         useful_lines = [line for line in lines if not re.match(r"^[{}\[\],]*$", line)]

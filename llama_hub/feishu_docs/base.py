@@ -77,8 +77,8 @@ class FeishuDocsReader(BaseReader):
         if self.tenant_access_token == "" or self.expire < time.time():
             self._update_tenant_access_token()
         headers = {
-            'Authorization': 'Bearer {}'.format(self.tenant_access_token),
-            'Content-Type': 'application/json; charset=utf-8'
+            'Authorization': f'Bearer {self.tenant_access_token}',
+            'Content-Type': 'application/json; charset=utf-8',
         }
         response = requests.get(url, headers=headers)
         return response.json()["data"]["content"]

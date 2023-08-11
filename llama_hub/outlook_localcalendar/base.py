@@ -93,10 +93,11 @@ class OutlookLocalCalendarReader(BaseReader):
             )
             if converted_date > start_date:  # if past start date
                 numberReturned += 1
-                eventstring = ""
-                for attribute in attributes:
-                    if hasattr(event, attribute):
-                        eventstring += f"{attribute}: {getattr(event,attribute)}, "
+                eventstring = "".join(
+                    f"{attribute}: {getattr(event, attribute)}, "
+                    for attribute in attributes
+                    if hasattr(event, attribute)
+                )
                 results.append(Document(text=eventstring))
             if numberReturned >= number_of_results:
                 break

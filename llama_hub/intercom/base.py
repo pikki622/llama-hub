@@ -70,11 +70,7 @@ class IntercomReader(BaseReader):
     def get_articles_page(self, next_page: str = None):
         import requests
 
-        if next_page is None:
-            url = "https://api.intercom.io/articles"
-        else:
-            url = next_page
-
+        url = "https://api.intercom.io/articles" if next_page is None else next_page
         headers = {
             "accept": "application/json",
             "Intercom-Version": "2.8",

@@ -26,10 +26,10 @@ class SECFilingsLoader(BaseReader):
         num_workers: int = 2,
         include_amends: bool = False,
     ):
-        assert filing_type in [
+        assert filing_type in {
             "10-K",
             "10-Q",
-        ], "The supported document types are 10-K and 10-Q"
+        }, "The supported document types are 10-K and 10-Q"
 
         self.tickers = tickers
         self.amount = amount

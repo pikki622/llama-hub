@@ -57,6 +57,4 @@ class GraphDBCypherReader(BaseReader):
             query, parameters, database_=self.database
         )
 
-        documents = [Document(text=yaml.dump(entry.data())) for entry in records]
-
-        return documents
+        return [Document(text=yaml.dump(entry.data())) for entry in records]

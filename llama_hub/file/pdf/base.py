@@ -32,7 +32,7 @@ class PDFReader(BaseReader):
                 metadata = {"page_label": page_label, "file_name": file.name}
 
                 if extra_info is not None:
-                    metadata.update(extra_info)
+                    metadata |= extra_info
 
                 docs.append(Document(text=page_text, extra_info=metadata))
             return docs
